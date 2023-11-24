@@ -1,4 +1,4 @@
-import { Schema, model, connect } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import {
   Guardian,
   LocalGuardian,
@@ -47,5 +47,5 @@ const studentSchema = new Schema<Student>({
 });
 
 // Model
-// const X    = model<InterfaceName>('X', xSchema)
-const Student = model<Student>('Student', studentSchema);
+// const XModel    = model<InterfaceName>('X', xSchema)
+export const StudentModel = model<Student>('Student', studentSchema);
