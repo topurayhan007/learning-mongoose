@@ -1,14 +1,16 @@
 import { Schema, model } from 'mongoose';
 import {
-  Guardian,
-  LocalGuardian,
-  Student,
-  UserName,
+  // StudentMethods,
+  StudentModel,
+  TGuardian,
+  TLocalGuardian,
+  TStudent,
+  TUserName,
 } from './student.interface';
 import validator from 'validator';
 
 // Sub-Schemas
-const userNameSchema = new Schema<UserName>({
+const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
     required: [true, 'First name is required'],
@@ -39,7 +41,7 @@ const userNameSchema = new Schema<UserName>({
   },
 });
 
-const guardianSchema = new Schema<Guardian>({
+const guardianSchema = new Schema<TGuardian>({
   fatherName: {
     type: String,
     trim: true,
@@ -70,7 +72,7 @@ const guardianSchema = new Schema<Guardian>({
   },
 });
 
-const localGuardianSchema = new Schema<LocalGuardian>({
+const localGuardianSchema = new Schema<TLocalGuardian>({
   name: {
     type: String,
     trim: true,
@@ -88,7 +90,10 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 });
 
 // Schema
-const studentSchema = new Schema<Student>({
+// for static
+const studentSchema = new Schema<TStudent, StudentModel>({
+  // for instance
+  // const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
   id: {
     type: String,
     required: [true, 'Student ID is required'],
@@ -149,6 +154,20 @@ const studentSchema = new Schema<Student>({
   isActive: { type: String, enum: ['active', 'blocked'], default: 'active' },
 });
 
+// for creating static method
+studentSchema.statics.isUserExists = async function (id: string) {
+  const existingUser = await Student.findOne({ id });
+  return existingUser;
+};
+
+/* 
+// for custom instance method
+studentSchema.methods.isUserExists = async function (id: string) {
+  const existingUser = await Student.findOne({ id });
+  return existingUser;
+};
+ */
+
 // Model
 // const XModel    = model<InterfaceName>('X=this will be the collection name in DB', xSchema)
-export const StudentModel = model<Student>('Student', studentSchema);
+export const Student = model<TStudent, StudentModel>('Student', studentSchema);
