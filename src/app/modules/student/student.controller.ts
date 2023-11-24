@@ -1,12 +1,29 @@
 import { Request, Response } from 'express';
 import { StudentServices } from './student.service';
+// import studentValidationSchema from './student.joi.validation';
+import studentValidationSchema from './student.validation';
 
 const createStudent = async (req: Request, res: Response) => {
   try {
     const { student: studentData } = req.body;
 
+    // data validation using zod
+    const zodParsedData = studentValidationSchema.parse(studentData);
+
+    /* 
+    // received data validate using Joi Schema
+    const { error, value } = studentValidationSchema.validate(studentData);
+
+    if (error) {
+      res.status(500).json({
+        status: false,
+        message: 'Something went wrong.',
+        error: error.details,
+      });
+    }
+ */
     // will call service function to send this data
-    const result = await StudentServices.createStudentIntoDB(studentData);
+    const result = await StudentServices.createStudentIntoDB(zodParsedData);
 
     // send response
     res.status(200).json({
@@ -15,7 +32,11 @@ const createStudent = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({
+      status: false,
+      message: 'Something went wrong.',
+      error: error,
+    });
   }
 };
 
@@ -29,7 +50,11 @@ const getAllStudents = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({
+      status: false,
+      message: 'Something went wrong.',
+      error: error,
+    });
   }
 };
 
@@ -44,7 +69,11 @@ const getSingleStudent = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({
+      status: false,
+      message: 'Something went wrong.',
+      error: error,
+    });
   }
 };
 
