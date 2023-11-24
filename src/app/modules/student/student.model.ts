@@ -47,5 +47,5 @@ const studentSchema = new Schema<Student>({
 });
 
 // Model
-// const XModel    = model<InterfaceName>('X', xSchema)
+// const XModel    = model<InterfaceName>('X=this will be the collection name in DB', xSchema)
 export const StudentModel = model<Student>('Student', studentSchema);
