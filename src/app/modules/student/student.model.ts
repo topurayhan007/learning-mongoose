@@ -8,6 +8,8 @@ import {
   TUserName,
 } from './student.interface';
 import validator from 'validator';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 // Sub-Schemas
 const userNameSchema = new Schema<TUserName>({
@@ -123,6 +125,13 @@ const studentSchema = new Schema<TStudent, StudentModel>({
       message: '{VALUE} is not a valid email',
     },
   },
+  password: {
+    type: String,
+    trim: true,
+    required: [true, 'Password is required'],
+    minlength: [8, 'Password must be at least 8 characters'],
+    maxlength: [20, 'Password cannot be more than 20 characters'],
+  },
   contactNo: { type: String, required: [true, 'Contact number is required'] },
   emergencyContactNo: {
     type: String,
@@ -154,7 +163,27 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   isActive: { type: String, enum: ['active', 'blocked'], default: 'active' },
 });
 
-// for creating static method
+// pre save middleware / hook : will work on create() & save()
+studentSchema.pre('save', async function (next) {
+  // console.log(this, 'pre hook: we will save the data');
+
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  // hashing password and save into DB
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  next();
+});
+
+// post save middleware / hook
+studentSchema.post('save', function () {
+  console.log(this, 'post hook: we will save the data');
+});
+
+// for creating custom static method
 studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser;
