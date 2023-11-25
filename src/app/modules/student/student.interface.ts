@@ -39,10 +39,12 @@ export type TStudent = {
   localGuardian: TLocalGuardian;
   profileImg?: string;
   isActive: 'active' | 'blocked';
+  isDeleted: boolean;
 };
 
 // for creating static
 export interface StudentModel extends Model<TStudent> {
+  // eslint-disable-next-line no-unused-vars
   isUserExists(id: string): Promise<TStudent | null>;
 }
 
